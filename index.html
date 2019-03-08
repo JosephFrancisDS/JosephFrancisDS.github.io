@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Education spending Visualization</title>
+	<link rel="stylesheet" type="text/css" href="style/style.css" />
+	   <script type = "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type = "text/javascript">
+	
+	google.charts.load('current' ,{'packages' : ['corechart']});
+	google.charts.setOnLoadCallback(drawAllSheets);
+	
+	function drawAllSheets() {
+	drawSheetName('TopEducation','SELECT A,B,C,D,E,F,G',
+	                 Top10EducationResponseHandler);
+
+    drawSheetName('TopEducation','SELECT A,F',
+	                 Top10EduGeoResponseHandler);
+
+    drawSheetName('TopEducation','SELECT A,G',
+                   Top10EduPieResponseHandler);					 
+	}
+						 
+
+	function drawSheetName(sheetName, query, responseHandler) {
+	var queryString = encodeURIComponent(query);
+	var query = new google.visualization.Query(
+	           'https://docs.google.com/spreadsheets/d/1Vi3S34zE89HYk_SjHJt2iyyFrL_8q-wsiyODUZ6-kNU/gviz/tq?sheet='
+			   + sheetName + '&headers=1&tq=' + queryString);
+	       query.send(responseHandler);
+	}
+	
+	function checkError(response) {
+	if(response.isError()) {
+	alert('Error in query: '+ response.getMessage() +
+	' ' + response.getDetailedMessage());
+	return;
+	}
+	}
+		
+    // Bar Chart for Top ten countries education spending for 6 years of data. 
+	function Top10EducationResponseHandler(response) {
+     checkError(response);
+	 var data = response.getDataTable();
+	 data.sort({column:6, desc:true});
+	 
+	 var options ={
+	 title:'Highest Educational spending of Top 10 nations',
+	   vAxis: {title: 'Spending in Billions USD ($)'},
+	  hAxis: {title:  'Country'},
+	 height: 500
+	 
+	 };
+	 
+	 var chart = new google.visualization.ColumnChart(
+	             document.getElementById('Top10Edubar_div'));
+				 
+	chart.draw(data, options);
+	}
+
+	// Geo map for top countries Education spending for year 2014
+	function Top10EduGeoResponseHandler(response) {
+        checkError(response);
+		var data = response.getDataTable();
+        data.sort({column:1, desc:true});
+
+        var options = {
+		height :400,
+	
+		colorAxis: {colors: ['#FFA07A','#FF4500']}, 
+		title: 'Top 10 Countries Education Spending in 2014 (USD Billions $)'
+		
+		};
+
+        var chart = new google.visualization.GeoChart(
+		document.getElementById('top10EduGeo_div'));
+		chart.draw(data, options);
+    } 	
+
+	// Pie chart for top countries Education spending for year 2015
+	function Top10EduPieResponseHandler(response) {
+	   checkError(response);
+	   var data = response.getDataTable();
+
+	   var options = {
+		height :400,
+		title: 'Top 10 Countries Educational Spending in 2015 (US Billions $)'
+		
+		};
+
+        var chart = new google.visualization.PieChart(
+		document.getElementById('top10EduPie_div'));
+		chart.draw(data, options);
+      }
+</script> 
+</head>
+
+<body>
+	<div id="main">
+		<div id="header">
+			<div id="logo">
+				<div id="logo_text">
+					<h1 style="color:black;">
+					Education Healthcare and Military spending of top 10 nation Visualization</h1>
+				</div><!-- logo_text -->
+			</div><!-- logo -->
+			<div id="menubar">
+				<ul id="menu">
+					<li class="selected"><a href="index.html">Education</a></li>
+					<li><a href="healthcare.html">Healthcare</a></li>
+					<li><a href="military.html">Military</a></li>
+					<li><a href="gdpgrowth.html">GDP Growth</a></li>
+					<li><a href="perpersonvsgdp.html">PerPerson Vs GDP</a></li>
+				</ul>
+			</div><!-- menubar -->
+		</div><!-- header -->
+
+			<div id="content">
+				<!-- insert page content here -->
+				<h1  bgcolor="#FFFF;">
+				<b>The Educational Spending of Top 10 Nations</b></h1>
+				<p style="color:black;">
+				The Organization for Economic Co-operation and Development (OECD) has published its annual Education 
+				at a Glance report, comparing a range of education sector metrics between its 36 member countries.
+				In 2015, the average total expenditure on education, measured as a proportion of total government 
+				spending, was 11% for the OECD nations. The lowest was Greece, at 6%. Only five countries spent more
+				than 15% on education: Brazil, Chile, Mexico and New Zealand were all between approximately 16% and 19%. 
+				</p>
+				<p style="color:black;">
+				The United States spends more money educating its young people than any other nation.Most of the money
+				invested in education comes from public sources, both in the U.S. and globally. However, the U.S. 
+				invested fewer tax dollars on educating its young people than most countries in 2014, paying 70 cents 
+				of each dollar spent on education, down two cents from a decade earlier. The average country in the 
+				OECD contributed 84 cents to each student’s bill.   					
+				</p>
+	
+				<table> <tr>
+				  <h1> <b>Bar Chart for Education spending in top ten countries(from G20)  </b> </h1>
+				  <td><div id ="Top10Edubar_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Geo map for Education spending in top ten countries in year 2014 </b> </h1>
+				  <td><div id ="top10EduGeo_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Pie chart for Education spending in top ten countries in year 2015 </b> </h1>
+				  <td><div id ="top10EduPie_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>				
+			</div><!-- content -->
+	</div><!-- main -->
+</body>
+</html>

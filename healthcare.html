@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Healthcare spending Visualization</title>
+	<link rel="stylesheet" type="text/css" href="style/style.css" />
+	   <script type = "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type = "text/javascript">
+	
+	google.charts.load('current' ,{'packages' : ['corechart']});
+	google.charts.setOnLoadCallback(drawAllSheets);
+	
+	function drawAllSheets() {
+	drawSheetName('TopHealth','SELECT A,B,C,D,E,F,G',
+	                 Top10HealthResponseHandler);
+						 
+	drawSheetName('TopHealth','SELECT A,F',
+	                 Top10HealthGeoResponseHandler);	
+	
+    drawSheetName('TopHealth', 'SELECT A,G',
+                      Top10HealthPieResponseHandler);					 
+	}
+						 
+
+	function drawSheetName(sheetName, query, responseHandler) {
+	var queryString = encodeURIComponent(query);
+	var query = new google.visualization.Query(
+	           'https://docs.google.com/spreadsheets/d/1Vi3S34zE89HYk_SjHJt2iyyFrL_8q-wsiyODUZ6-kNU/gviz/tq?sheet='
+			   + sheetName + '&headers=1&tq=' + queryString);
+	       query.send(responseHandler);
+	}
+	
+	function checkError(response) {
+	if(response.isError()) {
+	alert('Error in query: '+ response.getMessage() +
+	' ' + response.getDetailedMessage());
+	return;
+	}
+	}
+		
+	//Bar Chart for top ten Healthcare spending countires from 2010 to 2015
+	function Top10HealthResponseHandler(response) {
+     checkError(response);
+	 var data = response.getDataTable();
+	 data.sort({column:6, desc:true});
+	 
+	 var options ={
+	 title :' Top ten Healthcare spending countries from G20',
+	  height: 500,
+	  vAxis: {title: 'Spending in Billions USD ($)'},
+	  hAxis: {title:  'Country'}
+	 
+	 };
+	 
+	 var chart = new google.visualization.ColumnChart(
+	             document.getElementById('Top10Healtbar_div'));
+				 
+	 chart.draw(data, options);
+	}
+				
+	// Geo map for top ten Healthcare spending countires in year 2014
+	function Top10HealthGeoResponseHandler(response) {
+           checkError(response);
+		   var data = response.getDataTable();
+          data.sort({column:1, desc:true});
+
+        var options = {
+		height :400,
+		
+		colorAxis: {colors: ['#FFC0CB','#C71585']}, 
+		title: 'Top ten Healthcare spending countries(from G20) in 2014 (USD Billions $)'
+		
+		};
+
+        var chart = new google.visualization.GeoChart(
+		document.getElementById('top10HealthGeo_div'));
+		chart.draw(data, options);
+    }
+
+	// Pie chart for top countries Healthcare spending in year 2015
+	function Top10HealthPieResponseHandler(response) {
+	   checkError(response);
+		   var data = response.getDataTable();
+
+        var options = {
+		height :400,
+		title: 'Top ten Healthcare spending countries(from G20) in 2015 (US Billions $)'
+		
+		};
+
+        var chart = new google.visualization.PieChart(
+		document.getElementById('top10HealthPie_div'));
+		chart.draw(data, options);
+    }
+</script>
+</head>
+
+<body>
+	<div id="main">
+		<div id="header">
+			<div id="logo">
+				<div id="logo_text">
+					<h1 style="color:black;">
+					Education Healthcare and Military spending of top 10 nation Visualization</h1>
+				</div><!-- logo_text -->
+			</div><!-- logo -->
+			<div id="menubar">
+				<ul id="menu">
+					<li><a href="index.html">Education</a></li>
+					<li class="selected"><a href="healthcare.html">Healthcare</a></li>
+					<li><a href="military.html">Military</a></li>
+					<li><a href="gdpgrowth.html">GDP Growth</a></li>
+					<li><a href="perpersonvsgdp.html">PerPerson Vs GDP</a></li>
+				</ul>
+			</div><!-- menubar -->
+		</div><!-- header -->
+
+			<div id="content">
+				<!-- insert page content here -->
+				<h1  bgcolor="#FFFF;">
+				<b>Healthcare Spending of Top 10 Nations</b></h1>
+				<p style="color:black;">
+				The United States currently ranks highest in health care spending among the developed nations of the world,
+				according to data released by the Organization for Economic Co-operation and Development (OECD).
+				The United States spends more on health care than other countries, because it pays more for health care 
+				services and administration. People in the wealthiest parts of the world are living longer than ever. 
+				While in most wealthy countries universal health coverage gives financial protection to people against 
+				the cost of illness, many in other parts of the world still live without access to basic healthcare.
+ 
+				</p>
+				<p style="color:black;">
+				Health care spending in the United States greatly exceeds that in other wealthy countries, but the U.S. does 
+				not achieve better health outcomes. Policymakers commonly attribute this spending disparity to overuse of 
+				medical services and underinvestment in social services in the U.S. Below chart collection represent how 
+				spending on healthcare in the United States compares to other G20 countries that are similarly large 
+				and wealthy.					
+				</p>
+	
+				<table> <tr>
+				  <h1> <b>Bar Chart for Healthcare spending in top ten(from G20) countries </b> </h1>
+				  <td><div id ="Top10Healtbar_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Geo map for Healthcare spending in top ten(from G20) countries in year 2014 </b> </h1>
+				  <td><div id ="top10HealthGeo_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Pie chart for Healthcare spending in top ten(from G20) countries in year 2015 </b> </h1>
+				  <td><div id ="top10HealthPie_div" style="width: 900px;height:500px"></div></td>
+	</tr>
+	</table>
+			</div><!-- content -->
+	</div><!-- main -->
+</body>
+</html>

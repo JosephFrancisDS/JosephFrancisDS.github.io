@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Military spending Visualization</title>
+	<link rel="stylesheet" type="text/css" href="style/style.css" />
+	   <script type = "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type = "text/javascript">
+	
+	google.charts.load('current' ,{'packages' : ['corechart']});
+	google.charts.setOnLoadCallback(drawAllSheets);
+	
+	function drawAllSheets() {
+	drawSheetName('TopMilitary','SELECT A,B,C,D,E,F,G',
+	                 Top10MilitaryResponseHandler);
+						 
+	drawSheetName('TopMilitary','SELECT A,F',
+	                 Top10MilitaryGeoResponseHandler);	
+	
+    drawSheetName('TopMilitary', 'SELECT A,G',
+                      Top10MilitaryPieResponseHandler);					 
+	}
+						 
+
+	function drawSheetName(sheetName, query, responseHandler) {
+	var queryString = encodeURIComponent(query);
+	var query = new google.visualization.Query(
+	           'https://docs.google.com/spreadsheets/d/1Vi3S34zE89HYk_SjHJt2iyyFrL_8q-wsiyODUZ6-kNU/gviz/tq?sheet='
+			   + sheetName + '&headers=1&tq=' + queryString);
+	       query.send(responseHandler);
+	}
+	
+	function checkError(response) {
+	if(response.isError()) {
+	alert('Error in query: '+ response.getMessage() +
+	' ' + response.getDetailedMessage());
+	return;
+	}
+	}
+		
+	//Bar Chart for top ten Military spending countires from 2010 to 2015
+	function Top10MilitaryResponseHandler(response) {
+     checkError(response);
+	 var data = response.getDataTable();
+	 data.sort({column:6, desc:true});
+	 
+	 var options ={
+	 title :' Top ten Military spending countries from G20',
+	  height: 500,
+	  vAxis: {title: 'Spending in Billions USD ($)'},
+	  hAxis: {title:  'Country'}
+	 
+	 };
+	 
+	 var chart = new google.visualization.ColumnChart(
+	             document.getElementById('Top10Militarybar_div'));
+				 
+	 chart.draw(data, options);
+	}
+				
+	// Geo map for top ten Military spending countires in year 2014
+	function Top10MilitaryGeoResponseHandler(response) {
+           checkError(response);
+		   var data = response.getDataTable();
+          data.sort({column:1, desc:true});
+
+        var options = {
+		height :400,
+		
+		colorAxis: {colors: ['#FFC0CB','#C71585']}, 
+		title: 'Top ten Military spending countries(from G20) in year 2014 (USD Billions $)'
+		
+		};
+
+        var chart = new google.visualization.GeoChart(
+		document.getElementById('top10MilitaryGeo_div'));
+		chart.draw(data, options);
+    }
+
+	// Pie chart for top countries Military spending in year 2015
+	function Top10MilitaryPieResponseHandler(response) {
+	   checkError(response);
+		   var data = response.getDataTable();
+
+        var options = {
+		height :400,
+		title: 'Top ten Military spending countries(from G20) in year 2015 (US Billions $)'
+		
+		};
+
+        var chart = new google.visualization.PieChart(
+		document.getElementById('top10MilitaryPie_div'));
+		chart.draw(data, options);
+    }
+</script>
+</head>
+
+<body>
+	<div id="main">
+		<div id="header">
+			<div id="logo">
+				<div id="logo_text">
+					<h1 style="color:black;">
+					Education Healthcare and Military spending of top 10 nation Visualization</h1>
+				</div><!-- logo_text -->
+			</div><!-- logo -->
+			<div id="menubar">
+				<ul id="menu">
+					<li><a href="index.html">Education</a></li>
+					<li><a href="healthcare.html">Healthcare</a></li>
+					<li class="selected"><a href="military.html">Military</a></li>
+					<li><a href="gdpgrowth.html">GDP Growth</a></li>
+					<li><a href="perpersonvsgdp.html">PerPerson Vs GDP</a></li>
+				</ul>
+			</div><!-- menubar -->
+		</div><!-- header -->
+
+			<div id="content">
+				<!-- insert page content here -->
+				<h1  bgcolor="#FFFF;">
+				<b>Military Spending of Top 10 Nations</b></h1>
+				<p style="color:black;">
+				Worldwide military spending is estimated to have reached $1.7 trillion in 2017, according to a new report 
+				from the Stockholm International Peace Research Institute. This is the highest level of military expenditure 
+				since the end of the Cold War. The top five biggest spenders were the United States, China, Saudi Arabia, 
+				Russia and India, which accounted for 60 percent of global military spending. Although U.S. spending has
+				decreased from 2008 levels by 14 percent, it still spends 2.7 times more than the next highest spender, China.
+ 
+				</p>
+				<p style="color:black;">
+				China, Russia and India saw dramatic increases in spending since 2008. The increases in world military 
+				expenditure in recent years have been largely due to the substantial growth in spending by countries in 
+				Asia and Oceania and the Middle East, such as China, India and Saudi Arabia.
+				</p>
+	
+				<table> <tr>
+				  <h1> <b>Bar Chart for Military spending in top ten(from G20) countries </b> </h1>
+				  <td><div id ="Top10Militarybar_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Geo map for Military spending in top ten(from G20) countries in year 2014 </b> </h1>
+				  <td><div id ="top10MilitaryGeo_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Pie chart Military spending in top ten(from G20) countries in year 2015 </b> </h1>
+				  <td><div id ="top10MilitaryPie_div" style="width: 900px;height:500px"></div></td>
+	</tr>
+	</table>
+			</div><!-- content -->
+	</div><!-- main -->
+</body>
+</html>

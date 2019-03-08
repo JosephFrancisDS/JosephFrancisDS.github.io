@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Compare per person educational and HealthCare spending with per person GDP</title>
+	<link rel="stylesheet" type="text/css" href="style/style.css" />
+	   <script type = "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type = "text/javascript">
+	
+	google.charts.load('current' ,{'packages' : ['corechart']});
+	google.charts.setOnLoadCallback(drawAllSheets);
+	
+	function drawAllSheets() {
+	drawSheetName('PercapitaHealthGdp', 'SELECT A,F,W',
+	                     PercapitaHealthvsGdpResponseHandler);
+	
+	drawSheetName('PercapitaEducationGdp','SELECT  A,F,AB',
+	                     PercapitaEducationvsGdpResponseHandler);	
+
+	drawSheetName('FastHealth','SELECT A,B,C,D,E,F,G,H,I,J,K',
+	              FastestHealthFixedResponseHandler);
+				  
+    drawSheetName('FastHealth',' SELECT M,N,O,P,Q,R,S,T,U,V,W',
+	               FastestHealthPercentResponseHandler);
+				   
+	drawSheetName('FastEducation','SELECT A,B,C,D,E,F,G,H,I,J,K',
+	              FastestEducationFixedResponseHandler);
+				  
+    drawSheetName('FastEducation',' SELECT M,N,O,P,Q,R,S,T,U,V,W',
+	               FastestEducationPercentResponseHandler);
+		 
+	}
+						 
+
+	function drawSheetName(sheetName, query, responseHandler) {
+	var queryString = encodeURIComponent(query);
+	var query = new google.visualization.Query(
+	           'https://docs.google.com/spreadsheets/d/1Vi3S34zE89HYk_SjHJt2iyyFrL_8q-wsiyODUZ6-kNU/gviz/tq?sheet='
+			   + sheetName + '&headers=1&tq=' + queryString);
+	       query.send(responseHandler);
+	}
+	
+	function checkError(response) {
+	if(response.isError()) {
+	alert('Error in query: '+ response.getMessage() +
+	' ' + response.getDetailedMessage());
+	return;
+	}
+	}
+		
+	//Comparing the per person Healthcare spending with per person GDP
+	function PercapitaHealthvsGdpResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+			var options = {
+			        title: 'Bar chart comparison of Per person Healthcare spending with per person GDP in year 2014(US$)',
+					width: 600,
+					height: 400,
+					colors: [ '#FFFF99', '#CC2200'],
+					legend: {position: 'top', maxLines: 3},
+					bar: {groupWidth: '75%'},
+				
+					isStacked: true
+					
+			};
+			
+			var chart = new google.visualization.BarChart(
+					document.getElementById('PercapitaHelvsGdp_div'));
+			chart.draw(data, options);
+		
+	}
+		  
+	// Comparing the per person Education spending with per person GDP
+	function PercapitaEducationvsGdpResponseHandler(response) {
+		  
+		var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+	 var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1,
+                       { calc: "stringify",
+                         sourceColumn: 1,
+                         type: "string",
+                         role: "annotation" },
+                       2]);
+					   
+			var options = {
+			        title:'Bar chart comparison of Per person Healthcare spending with per person GDP in year 2014(US$)',
+					width: 600,
+					height: 400,
+					colors: [ '#FF66B3', '#19FFFF'],
+					legend: {position: 'top', maxLines: 3},
+					bar: {groupWidth: '75%'},
+				
+					isStacked: true
+					
+			};
+			
+			var formatter = new google.visualization.NumberFormat({
+							fractionDigits: 2, prefix: '$'});
+
+			formatter.format(data, 1);
+
+			var chart = new google.visualization.BarChart(
+					document.getElementById('PercapitaEduvsGdp_div'));
+			chart.draw(data, options);
+		
+	}	
+
+	//Time series line chart for fastest growing country in terms of health care(Fixed value)	
+	function FastestHealthFixedResponseHandler(response) {
+  
+		var data = response.getDataTable();
+	    data.sort({column: 0, desc: false});
+	    var view = new google.visualization.DataView(data);
+     
+       var options = {
+	              vAxis:{title:'GDP'},
+				  hAxis:{title:'Healthcare spending in fixed value(in Billions - USD($))'},
+			      minColor: '#f00',
+                  midColor: '#ddd',
+                  maxColor: '#0d0',
+                  headerHeight: 15,
+                  fontColor: 'black',
+                  showScale: true
+                     };
+					 
+			   var  chart = new google.visualization.LineChart(
+					document.getElementById('HealthFixedVal_div'));
+					
+			   chart.draw(data, options);
+	}			
+
+
+	//Time series line chart for fastest growing country in terms of health care in percent value
+    function  FastestHealthPercentResponseHandler(response)	{
+  	  
+		var data = response.getDataTable();
+	    data.sort({column: 0, desc: false});
+	    var view = new google.visualization.DataView(data);
+     
+       var options = {
+	              vAxis:{title:'GDP'},
+				  hAxis:{title:'Healthcare spending in percent(%)'},
+                  maxColor: '#0d0',
+                  headerHeight: 15,
+                  fontColor: 'black',
+                  showScale: true
+                     };
+					 
+			   var  chart = new google.visualization.LineChart(
+					document.getElementById('HealthPercentVal_div'));
+					
+			   chart.draw(data, options);
+	}			
+		  
+	//Time series line chart for fastest growing country in terms of Education(Fixed value)	  
+	function FastestEducationFixedResponseHandler(response) {
+	  
+		var data = response.getDataTable();
+	    data.sort({column: 0, desc: false});
+	    var view = new google.visualization.DataView(data);
+     
+       var options = {
+	              vAxis:{title:'GDP'},
+				  hAxis:{title:'Education spending in fixed value(in Billions - USD($))'},
+			      minColor: '#f00',
+                  midColor: '#ddd',
+                  maxColor: '#0d0',
+                  headerHeight: 15,
+                  fontColor: 'black',
+                  showScale: true
+                     };
+					 
+			   var  chart = new google.visualization.LineChart(
+					document.getElementById('EduFixedVal_div'));
+					
+			   chart.draw(data, options);
+	}			
+
+	//Time series line chart for fastest growing country in terms of Education in percent value	  
+	function  FastestEducationPercentResponseHandler(response)	{
+   	  
+		var data = response.getDataTable();
+	    data.sort({column: 0, desc: false});
+	    var view = new google.visualization.DataView(data);
+     
+       var options = {
+	              vAxis:{title:'GDP'},
+				  hAxis:{title:'Education  spending in percent(%)'},
+                  maxColor: '#0d0',
+                  headerHeight: 15,
+                  fontColor: 'black',
+                  showScale: true
+                     };
+					 
+			   var  chart = new google.visualization.LineChart(
+					document.getElementById('EduPercentVal_div'));
+					
+			   chart.draw(data, options);
+	}			
+	
+</script>
+</head>
+
+<body>
+	<div id="main">
+		<div id="header">
+			<div id="logo">
+				<div id="logo_text">
+					<h1 style="color:black;">
+					Education Healthcare and Military spending of top 10 nation Visualization</h1>
+				</div><!-- logo_text -->
+			</div><!-- logo -->
+			<div id="menubar">
+				<ul id="menu">
+					<li><a href="index.html">Education</a></li>
+					<li><a href="healthcare.html">Healthcare</a></li>
+					<li><a href="military.html">Military</a></li>
+					<li><a href="gdpgrowth.html">GDP Growth</a></li>
+					<li class="selected"><a href="perpersonvsgdp.html">PerPerson Vs GDP</a></li>
+				</ul>
+			</div><!-- menubar -->
+		</div><!-- header -->
+
+			<div id="content">
+				<!-- insert page content here -->
+				<h1  bgcolor="#FFFF;">
+				<b>Compare per person educational and HealthCare spending with per person GDP</b></h1>
+				<p style="color:black;">
+				Gross Domestic Product(GDP) is one of the most common measures of economic output and strength. 
+				Virtually all countries around the world measure and report their GDP on a regular basis. This 
+				allows us to directly compare their economic power. Fortunately, the World Bank provides a 
+				comprehensive database of economic indicators, including current and historic data on GDP for most 
+				countries.
+				</p>
+				<p style="color:black;">
+				The world’s most powerful economy is the United States. The most important sector in the US is 
+				the services sector, which accounts for 80.2% of total GDP, followed by the industry sector (18.9%) 
+				and agriculture (0.9%). The second largest economy in the world is China. China is also the world’s 
+				largest country by population, with more than 1.3 billion people. The next country on the list is 
+				Japan. it is the world’s third most powerful economy.  
+				</p>
+	
+				<table> <tr>
+				  <h1> <b>Bar chart comparison of Per person Healthcare spending with per person GDP in year 2014(US$)</b> </h1>
+				  <td><div id ="PercapitaHelvsGdp_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Bar chart comparison of Per person Education spending with per person GDP in year 2014(US$) </b> </h1>
+				  <td><div id ="PercapitaEduvsGdp_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Time series line chart for fastest growing country in terms of HealthCare(Fixed value)</b> </h1>
+				  <td><div id ="HealthFixedVal_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Time series line chart for fastest growing country in terms of HealthCare in percent value </b> </h1>
+				  <td><div id ="HealthPercentVal_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Time series line chart for fastest growing country in terms of Education(Fixed value)</b> </h1>
+				  <td><div id ="EduFixedVal_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>
+
+				<table> <tr>
+				  <h1> <b>Time series line chart for fastest growing country in terms of Education in percent value </b> </h1>
+				  <td><div id ="EduPercentVal_div" style="width: 900px;height:500px"></div></td>
+				</tr>
+				</table>				
+	</tr>
+	</table>
+			</div><!-- content -->
+	</div><!-- main -->
+</body>
+</html>
